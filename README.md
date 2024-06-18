@@ -45,7 +45,7 @@ multi-tenant-database/
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/yourusername/multi-tenant-database.git
-   cd multi-tenant-database
+   cd multi-tenant-saas-app
 
 2. **Create a virtual environment and activate it**:
    ```bash
