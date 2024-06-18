@@ -65,6 +65,16 @@ retrieve_information() {
     sqlite3 "$1.db" "SELECT * FROM Permissions;" | while read -r row; do
         echo "$row"
     done
+
+    echo "Retrieving PersonalDetails..."
+    sqlite3 "$1.db" "SELECT * FROM PersonalDetails;" | while read -r row; do
+        echo "$row"
+    done
+
+    echo "Retrieving Settings..."
+    sqlite3 "$1.db" "SELECT * FROM Settings;" | while read -r row; do
+        echo "$row"
+    done
 }
 
 # Function to insert sample data into the shared database
