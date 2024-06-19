@@ -5,9 +5,8 @@ def create_tenant_database(tenant_id):
     cursor = connection.cursor()
 
     cursor.execute('''
-    CREATE TABLE Users (
+    CREATE TABLE IF NOT EXISTS Users (
         user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tenant_id INTEGER,
         username TEXT NOT NULL,
         email TEXT NOT NULL,
         password TEXT NOT NULL
@@ -15,9 +14,38 @@ def create_tenant_database(tenant_id):
     ''')
 
     cursor.execute('''
-    CREATE TABLE Projects (
+    CREATE TABLE IF NOT EXISTS Permissions (
+        permission_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        permission_type TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    );
+    ''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS PersonalDetails (
+        detail_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        full_name TEXT,
+        address TEXT,
+        phone_number TEXT,
+        FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    );
+    ''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Settings (
+        setting_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        setting_name TEXT NOT NULL,
+        setting_value TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    );
+    ''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Projects (
         project_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tenant_id INTEGER,
         user_id INTEGER,
         project_name TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES Users(user_id)
@@ -25,9 +53,8 @@ def create_tenant_database(tenant_id):
     ''')
 
     cursor.execute('''
-    CREATE TABLE Tasks (
+    CREATE TABLE IF NOT EXISTS Tasks (
         task_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tenant_id INTEGER,
         project_id INTEGER,
         task_name TEXT NOT NULL,
         status TEXT NOT NULL,
@@ -36,30 +63,22 @@ def create_tenant_database(tenant_id):
     ''')
 
     cursor.execute('''
-    CREATE TABLE Comments (
+    CREATE TABLE IF NOT EXISTS Comments (
         comment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tenant_id INTEGER,
         task_id INTEGER,
         comment_text TEXT NOT NULL,
         FOREIGN KEY (task_id) REFERENCES Tasks(task_id)
     );
     ''')
 
-    cursor.execute('''
-    CREATE TABLE Permissions (
-        permission_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tenant_id INTEGER,
-        user_id INTEGER,
-        permission_type TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES Users(user_id)
-    );
-    ''')
-
     connection.commit()
     connection.close()
 
-# Example: Create databases for tenants 1 and 2
 if __name__ == "__main__":
-    create_tenant_database(1)
-    create_tenant_database(2)
+    import sys
+    if len(sys.argv) != 2:
+        print("Usage: python create_tenant_database.py <tenant_id>")
+    else:
+        create_tenant_database(sys.argv[1])
+        print(f"Created tenant database for tenant ID: {sys.argv[1]}")
 
